@@ -22,13 +22,13 @@ const usersSchema = new Schema(
     name: { type: String, required: true },
     surname: { type: String, required: true },
     email: { type: String, required: true },
-    bio: { type: String, required: true },
-    title: { type: String, required: true },
-    area: { type: String, required: true },
-    image: { type: String, required: true },
+    bio: { type: String },
+    title: { type: String },
+    area: { type: String },
+    image: { type: String },
     username: { type: String, required: true },
     experiences: [experienceSchema],
-    likedPosts: [{ type: String, required: false }],
+    likedPosts: [{ type: String }],
     skills: [{ type: Schema.Types.ObjectId, ref: "Skill" }],
     connections: [{ type: Schema.Types.ObjectId, ref: "User" }],
     sentRequests: [{ type: Schema.Types.ObjectId, ref: "Connection" }],
@@ -39,4 +39,4 @@ const usersSchema = new Schema(
   }
 );
 
-export default model("User", usersSchema);
+export default model("Users", usersSchema);
