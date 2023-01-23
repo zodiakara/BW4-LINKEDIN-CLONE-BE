@@ -37,10 +37,8 @@ usersRouter.get("/", async (req, res, next) => {
 usersRouter.get("/:userId", async (req, res, next) => {
   try {
     const user = await UsersModel.findById(req.params.userId);
-    console.log("this is user", user);
     if (user) {
       res.send(user);
-      console.log(user);
     } else {
       next(
         createHttpError(404, `User with id ${req.params.userId}not found!!`)
@@ -72,6 +70,14 @@ usersRouter.put("/:userId", async (req, res, next) => {
 
 usersRouter.delete("/:userId", async (req, res, next) => {
   try {
+    const deletedUser = await UsersModel.findByIdAndDelete(req.params.userId);
+    if (deletedUser) {
+      res.status(204).send();
+    } else {
+      next(
+        createHttpError(404, `User with id ${req.params.userId}not found!!`)
+      );
+    }
   } catch (error) {
     next(error);
   }
