@@ -44,7 +44,7 @@ postsRouter.get("/:postId", async (req, res, next) => {
   }
 });
 
-postsRouter.put("postId", async (req, res, next) => {
+postsRouter.put("/:postId", async (req, res, next) => {
   try {
     const updatedPost = await PostModel.findByIdAndUpdate(
       req.params.postId,
