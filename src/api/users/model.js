@@ -1,19 +1,21 @@
-// "_id": "5d84937322b7b54d848eb41b", //server generated
-// "name": "Diego",
-// "surname": "Banovaz",
-// "email": "diego@strive.school",
-// "bio": "SW ENG",
-// "title": "COO @ Strive School",
-// "area": "Berlin",
-// "image": ..., //server generated on upload, set a default here
-// "username": "admin", //need to be unique
-// "createdAt": "2019-09-20T08:53:07.094Z", //server generated
-// "updatedAt": "2019-09-20T09:00:46.977Z", //server generated
-// }
-
 import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
+
+const experienceSchema = new Schema(
+  {
+    role: { type: String, required: true },
+    company: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: false },
+    description: { type: String, required: true },
+    area: { type: String, required: true },
+    image: { type: String, required: true },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const usersSchema = new Schema(
   {
@@ -25,9 +27,16 @@ const usersSchema = new Schema(
     area: { type: String },
     image: { type: String },
     username: { type: String, required: true },
+    experiences: [experienceSchema],
+    likedPosts: [{ type: String }],
+    skills: [{ type: Schema.Types.ObjectId, ref: "Skill" }],
+    connections: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    sentRequests: [{ type: Schema.Types.ObjectId, ref: "Connection" }],
+    receivedRequests: [{ type: Schema.Types.ObjectId, ref: "Connection" }]
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
-console.log(Schema.methods);
 
 export default model("Users", usersSchema);
