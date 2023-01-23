@@ -18,7 +18,6 @@ server.use(cors());
 server.use(express.json());
 
 // endpoints
-server.use("/experiences", experiencesRouter);
 server.use("/posts", postsRouter);
 server.use("/users", usersRouter);
 
