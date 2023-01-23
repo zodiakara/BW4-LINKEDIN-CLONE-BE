@@ -2,7 +2,7 @@ import express from "express";
 import createHttpError from "http-errors";
 import PostModel from "./model.js";
 
-const postsRouter = express.Router();
+const postsRouter = express.Router;
 
 postsRouter.get("/", async (req, res, next) => {
   try {
