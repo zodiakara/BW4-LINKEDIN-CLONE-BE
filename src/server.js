@@ -26,12 +26,12 @@ server.use(badRequestHandler);
 server.use(notFoundHandler);
 server.use(genericErrorHandler);
 
-// mongoose.connect(process.env.MONGO_URL);
+mongoose.connect(process.env.MONGO_URL);
 
-// mongoose.connection.on("connected", () => {
-//   console.log("successfully connected to Mongo!");
-server.listen(port, () => {
-  console.table(listEndpoints(server));
-  console.log(`Server is running on port ${port}`);
+mongoose.connection.on("connected", () => {
+  console.log("successfully connected to Mongo!");
+  server.listen(port, () => {
+    console.table(listEndpoints(server));
+    console.log(`Server is running on port ${port}`);
+  });
 });
-// });
