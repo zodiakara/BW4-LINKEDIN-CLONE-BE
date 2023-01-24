@@ -3,7 +3,6 @@ import createHttpError from "http-errors";
 import UsersModel from "./model.js";
 import experiencesModel from "../experiences/model.js";
 import q2m from "query-to-mongo";
-import { getExperiences, writeExperiences } from "../../lib/fs-tools.js";
 import mongoose from "mongoose";
 
 const url = process.env.BE_URL;
