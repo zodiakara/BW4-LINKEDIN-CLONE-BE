@@ -10,13 +10,15 @@ const usersRouter = express.Router();
 usersRouter.post("/", async (req, res, next) => {
   try {
     const newUser = new UsersModel(req.body);
-    console.log(newUser);
-    if (newUser) {
+    const checkUsername = await UsersModel.findOne({
+      username: newUser.username,
+    });
+    if (checkUsername) {
+      next(createHttpError(400, "username already in use!"));
+    } else {
       const { _id } = await newUser.save();
       res.status(201).send({ _id });
       console.log(`user with id ${_id} successfully created!`);
-    } else {
-      next(createHttpError(400, `something went wrong`));
     }
   } catch (error) {
     next(error);
