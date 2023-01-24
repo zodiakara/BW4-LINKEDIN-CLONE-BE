@@ -10,6 +10,7 @@ import {
   genericErrorHandler,
   notFoundHandler,
 } from "./errorHandlers.js";
+import filesRouter from "./api/files/index.js";
 
 const server = express();
 const port = process.env.PORT;
@@ -20,6 +21,7 @@ server.use(express.json());
 // endpoints
 server.use("/posts", postsRouter);
 server.use("/users", usersRouter);
+server.use("/files", filesRouter);
 
 server.use(badRequestHandler);
 server.use(notFoundHandler);

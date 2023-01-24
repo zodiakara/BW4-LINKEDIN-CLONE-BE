@@ -10,7 +10,7 @@ const experienceSchema = new Schema(
     endDate: { type: Date, required: false },
     description: { type: String, required: true },
     area: { type: String, required: true },
-    image: { type: String, required: true },
+    image: { type: String, default: "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1", required: false },
   },
   {
     timestamps: true,
