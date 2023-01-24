@@ -3,7 +3,6 @@ import createHttpError from "http-errors";
 import UsersModel from "./model.js";
 import experiencesModel from "../experiences/model.js";
 import q2m from "query-to-mongo";
-import { getExperiences, writeExperiences } from "../../lib/fs-tools.js";
 import mongoose from "mongoose";
 
 const url = process.env.BE_URL;
@@ -117,10 +116,12 @@ usersRouter.get(
   "/:userId/experiences/:experiencesId",
   async (req, res, next) => {
     try {
-      const user = await UsersModel.findById(req.params.userId)
+      const user = await UsersModel.findById(req.params.userId);
       if (user) {
-      const singleExperiences = user.experiences.find((experience) => experience._id.toString() === req.params.experiencesId);
-      res.status(200).send(singleExperiences);
+        const singleExperiences = user.experiences.find(
+          (experience) => experience._id.toString() === req.params.experiencesId
+        );
+        res.status(200).send(singleExperiences);
       } else {
         next(createHttpError(404, "experiences Not Found"));
       }
@@ -132,12 +133,18 @@ usersRouter.get(
 
 usersRouter.post("/:userId/experiences", async (req, res, next) => {
   try {
-    const newExperiences = {...req.body}; //
+    const newExperiences = { ...req.body }; //
     if (newExperiences) {
-    const updateUserExperience = await UsersModel.findByIdAndUpdate(req.params.userId, {$push: {experiences: newExperiences}}, {new: true, runValidators: true})
-    res.status(201).send({ message: `Added a new experience.`, updateUserExperience });
+      const updateUserExperience = await UsersModel.findByIdAndUpdate(
+        req.params.userId,
+        { $push: { experiences: newExperiences } },
+        { new: true, runValidators: true }
+      );
+      res
+        .status(201)
+        .send({ message: `Added a new experience.`, updateUserExperience });
     } else {
-      next(createHttpError("Malakia ekanes!"))
+      next(createHttpError("Malakia ekanes!"));
     }
   } catch (error) {
     next(error);
@@ -150,16 +157,17 @@ usersRouter.put(
     try {
       const user = await UsersModel.findById(req.params.userId);
       if (user) {
-        const index = user.experiences.findIndex((experience) => experience._id.toString() === req.params.experiencesId)
-        const updatedexperiences = user.experiences[index].toObject()
-      user.experiences[index] = {
-        ...updatedexperiences,
-        ...req.body
-      }
-      await user.save()
-      res.status(200).send(user);
+        const index = user.experiences.findIndex(
+          (experience) => experience._id.toString() === req.params.experiencesId
+        );
+        const updatedexperiences = user.experiences[index].toObject();
+        user.experiences[index] = {
+          ...updatedexperiences,
+          ...req.body,
+        };
+        await user.save();
+        res.status(200).send(user);
       } else {
-
       }
     } catch (error) {
       next(error);
@@ -172,12 +180,16 @@ usersRouter.delete(
   async (req, res, next) => {
     try {
       const updatedUser = await UsersModel.findByIdAndUpdate(
-        req.params.userId, {$pull: {experiences: {_id: req.params.experiencesId}}}, {new: true}
+        req.params.userId,
+        { $pull: { experiences: { _id: req.params.experiencesId } } },
+        { new: true }
       );
       if (updatedUser) {
         res.send(updatedUser);
       } else {
-        next(createHttpError(404, `User with id ${req.params.userId} not found!`));
+        next(
+          createHttpError(404, `User with id ${req.params.userId} not found!`)
+        );
       }
     } catch (error) {
       next(error);
