@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const experiencesDbSchema = new Schema(
+export const experiencesDbSchema = new Schema(
   {
     role: { type: String, required: true },
     company: { type: String, required: true },
