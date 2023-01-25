@@ -5,6 +5,7 @@ import q2m from "query-to-mongo";
 import { mongo } from "mongoose";
 import UserSchema from "../users/model.js";
 
+
 const postsRouter = express.Router();
 
 postsRouter.get("/", async (req, res, next) => {
