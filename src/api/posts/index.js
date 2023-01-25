@@ -4,6 +4,7 @@ import PostModel from "./model.js";
 import q2m from "query-to-mongo";
 import { mongo } from "mongoose";
 
+
 const postsRouter = express.Router();
 
 postsRouter.get("/", async (req, res, next) => {
