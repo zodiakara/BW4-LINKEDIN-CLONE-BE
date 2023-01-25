@@ -6,18 +6,6 @@ import { mongo } from "mongoose";
 
 const postsRouter = express.Router();
 
-// postsRouter.get("/", async (req, res, next) => {
-//   try {
-//     const posts = await PostModel.find().populate({
-//       path: "user",
-//       select: "name surname image",
-//     });
-//     res.send(posts);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
 postsRouter.get("/", async (req, res, next) => {
   try {
     const mongoQuery = q2m(req.query);
