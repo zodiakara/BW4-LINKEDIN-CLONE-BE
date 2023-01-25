@@ -6,7 +6,7 @@ const postsSchema = new Schema(
   {
     text: { type: String, required: true },
     username: { type: String, required: true },
-    image: { type: String, required: true },
+    image: { data: Buffer, contentType: String },
     user: { type: Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }

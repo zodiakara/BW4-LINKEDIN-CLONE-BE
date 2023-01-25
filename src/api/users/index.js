@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import multer from "multer";
+import createCVPdf from "../../lib/pdf-tools.js";
 
 const usersRouter = express.Router();
 
@@ -70,13 +71,15 @@ usersRouter.post(
 usersRouter.post("/", async (req, res, next) => {
   try {
     const newUser = new UsersModel(req.body);
-    console.log(newUser);
-    if (newUser) {
+    const checkUsername = await UsersModel.findOne({
+      username: newUser.username,
+    });
+    if (checkUsername) {
+      next(createHttpError(400, "username already in use!"));
+    } else {
       const { _id } = await newUser.save();
       res.status(201).send({ _id });
       console.log(`user with id ${_id} successfully created!`);
-    } else {
-      next(createHttpError(400, `something went wrong`));
     }
   } catch (error) {
     next(error);
@@ -253,5 +256,22 @@ usersRouter.delete(
     }
   }
 );
+
+// print user CV:
+
+usersRouter.get("/:userId/printCV", async (req, res, next) => {
+  try {
+    const user = await UsersModel.findById(req.params.userId);
+    if (user) {
+      await createCVPdf(req.params.userId, user, res);
+    } else {
+      next(
+        createHttpError(404, `User with id ${req.params.userId} not found!`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default usersRouter;

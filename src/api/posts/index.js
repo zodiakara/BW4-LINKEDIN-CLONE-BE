@@ -1,16 +1,28 @@
 import express from "express";
 import createHttpError from "http-errors";
 import PostModel from "./model.js";
+import q2m from "query-to-mongo";
+import { mongo } from "mongoose";
+
 
 const postsRouter = express.Router();
 
 postsRouter.get("/", async (req, res, next) => {
   try {
-    const posts = await PostModel.find().populate({
-      path: "user",
-      select: "name surname image",
+    const mongoQuery = q2m(req.query);
+    const total = await PostModel.countDocuments(mongoQuery.criteria);
+    const posts = await PostModel.find(
+      mongoQuery.criteria,
+      mongoQuery.options.fields
+    )
+      .limit(mongoQuery.options.limit)
+      .skip(mongoQuery.options.skip)
+      .sort(mongoQuery.options.sort);
+    res.send({
+      links: mongoQuery.links("http://localhost:3001/posts", total),
+      totalPages: Math.ceil(total / mongoQuery.options.limit),
+      posts,
     });
-    res.send(posts);
   } catch (error) {
     next(error);
   }
