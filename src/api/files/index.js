@@ -1,5 +1,7 @@
 import express from "express";
 import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { pipeline } from "stream";
 import json2csv from "json2csv";
 import UsersModel from "../users/model.js";
