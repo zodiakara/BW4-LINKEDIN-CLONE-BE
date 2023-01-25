@@ -3,6 +3,7 @@ import createHttpError from "http-errors";
 import PostModel from "./model.js";
 import q2m from "query-to-mongo";
 import { mongo } from "mongoose";
+import UserSchema from "../users/model.js";
 
 const postsRouter = express.Router();
 
@@ -86,6 +87,33 @@ postsRouter.delete("/:postId", async (req, res, next) => {
           createHttpError(404, `Post with id ${req.params.postId} not found!`)
         )
       );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// -----------Embedded------------------------
+
+postsRouter.post("/:postId/user", async (req, res, next) => {
+  try {
+    const users = await UserSchema.findById(req.body.userId, { _id: 0 });
+    if (users) {
+      const userToInsert = { ...users.toObject() };
+      const updatedPost = await PostModel.findByIdAndUpdate(
+        req.params.postId,
+        { $push: { user: userToInsert } },
+        { new: true, runValidators: true }
+      );
+      if (updatedPost) {
+        res.send(updatedPost);
+      } else {
+        next(
+          createHttpError(404, `Post with id ${req.params.postId} not found!`)
+        );
+      }
+    } else {
+      next(createHttpError(404, `User with id ${req.body.userId} not found!`));
     }
   } catch (error) {
     next(error);
