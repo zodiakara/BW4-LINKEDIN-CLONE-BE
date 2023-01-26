@@ -4,7 +4,6 @@ import PostModel from "./model.js";
 import q2m from "query-to-mongo";
 import { mongo } from "mongoose";
 
-
 const postsRouter = express.Router();
 
 postsRouter.get("/", async (req, res, next) => {
@@ -15,6 +14,10 @@ postsRouter.get("/", async (req, res, next) => {
       mongoQuery.criteria,
       mongoQuery.options.fields
     )
+      .populate({
+        path: "user",
+        select: "name surname image",
+      })
       .limit(mongoQuery.options.limit)
       .skip(mongoQuery.options.skip)
       .sort(mongoQuery.options.sort);
@@ -30,9 +33,16 @@ postsRouter.get("/", async (req, res, next) => {
 
 postsRouter.post("/", async (req, res, next) => {
   try {
-    const newPost = new PostModel(req.body);
-    const { _id } = await newPost.save();
-    res.status(201).send({ _id });
+    const userId = req.body.user;
+    const user = await UsersModel.findById(userId);
+    console.log(user);
+    if (user) {
+      const newPost = new PostModel(req.body);
+      const { _id } = await newPost.save();
+      res.status(201).send({ _id });
+    } else {
+      next(createHttpError(404, `User with id ${userId} not found`));
+    }
   } catch (error) {
     next(error);
   }
