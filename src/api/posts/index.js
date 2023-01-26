@@ -3,8 +3,20 @@ import createHttpError from "http-errors";
 import PostModel from "./model.js";
 import q2m from "query-to-mongo";
 import { mongo } from "mongoose";
+import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 const postsRouter = express.Router();
+
+const PostsCloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "BW4-LINKEDIN-CLONE-BE/posts",
+    },
+  }),
+}).single("post");
 
 postsRouter.get("/", async (req, res, next) => {
   try {
@@ -102,5 +114,32 @@ postsRouter.delete("/:postId", async (req, res, next) => {
     next(error);
   }
 });
+
+// POST POST IMAGE
+
+postsRouter.post(
+  "/:postId/image",
+  PostsCloudinaryUploader,
+  async (req, res, next) => {
+    try {
+      console.log(req.file);
+      const imageUrl = req.file.path;
+      const updatedPost = await PostModel.findByIdAndUpdate(
+        req.params.postId,
+        { image: imageUrl },
+        { new: true, runValidators: true }
+      );
+      if (updatedPost) {
+        res.send("file uploaded!");
+      } else {
+        next(
+          createHttpError(404, `Post with id ${req.params.postId} not found!`)
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default postsRouter;

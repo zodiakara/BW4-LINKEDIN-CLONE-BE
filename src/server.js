@@ -16,21 +16,20 @@ const port = process.env.PORT;
 
 const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL];
 
-const corsOpts = {
-  origin: (origin, corsNext) => {
-    console.log("Current origin: " + origin);
-    if (!origin || whitelist.indexOf(origin) !== -1) {
-      corsNext(null, true);
-    } else {
-      corsNext(createHttpError(400, `Origin ${origin} is not allowed`));
-    }
-  },
-};
+// const corsOpts = {
+//   origin: (origin, corsNext) => {
+//     console.log("Current origin: " + origin);
+//     if (!origin || whitelist.indexOf(origin) !== -1) {
+//       corsNext(null, true);
+//     } else {
+//       corsNext(createHttpError(400, `Origin ${origin} is not allowed`));
+//     }
+//   },
+// };
 
-server.use(cors(corsOpts));
+server.use(cors());
 server.use(express.json());
 
-// endpoints
 server.use("/posts", postsRouter);
 server.use("/users", usersRouter);
 server.use("/files", filesRouter);
@@ -40,8 +39,6 @@ server.use(notFoundHandler);
 server.use(genericErrorHandler);
 
 mongoose.connect(process.env.MONGO_URL);
-
-//---
 
 mongoose.connection.on("connected", () => {
   console.log("successfully connected to Mongo!");

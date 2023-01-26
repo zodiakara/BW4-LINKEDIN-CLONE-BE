@@ -20,8 +20,16 @@ const experienceCloudinaryUploader = multer({
       public_id: (req) => req.params.experienceId,
     },
   }),
-  limits: { fileSize: 1024 * 1024 },
 }).single("experience");
+
+const userProfileCloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "BW4-LINKEDIN-CLONE-BE/users",
+    },
+  }),
+}).single("user");
 
 // USER ROUTER:
 
@@ -275,6 +283,33 @@ usersRouter.post(
             )
           );
         }
+      } else {
+        next(
+          createHttpError(404, `User with id ${req.params.userId} not found!`)
+        );
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// POST USER IMAGE
+
+usersRouter.post(
+  "/:userId/image",
+  userProfileCloudinaryUploader,
+  async (req, res, next) => {
+    try {
+      console.log(req.file);
+      const imageUrl = req.file.path;
+      const updatedUser = await UsersModel.findByIdAndUpdate(
+        req.params.userId,
+        { image: imageUrl },
+        { new: true, runValidators: true }
+      );
+      if (updatedUser) {
+        res.send("file uploaded!");
       } else {
         next(
           createHttpError(404, `User with id ${req.params.userId} not found!`)
