@@ -23,53 +23,7 @@ const experienceCloudinaryUploader = multer({
   limits: { fileSize: 1024 * 1024 },
 }).single("experience");
 
-// POST EXPERIENCE IMAGE
-
-usersRouter.post(
-  "/:userId/experiences/:experienceId/image",
-  experienceCloudinaryUploader,
-  async (req, res, next) => {
-    try {
-      const user = await UsersModel.findById(req.params.userId);
-      if (user) {
-        const selectedExperienceIndex = user.experiences.findIndex(
-          (experience) => experience._id.toString() === req.params.experienceId
-        );
-        if (selectedExperienceIndex !== -1) {
-          cloudinary.uploader
-            .upload(url, {
-              public_id: req.params.experienceId,
-              tags: "experience_image",
-            })
-            .then((result) => {
-              const imageUrl = result.url;
-              user.experiences[selectedExperienceIndex].image = imageUrl;
-              user.save({ validateBeforeSave: false }).then(() => {
-                res.send(user);
-              });
-            })
-            .catch((error) => {
-              console.log(error);
-              next(error);
-            });
-        } else {
-          next(
-            createHttpError(
-              404,
-              `Experience with id ${req.params.experienceId} not found!`
-            )
-          );
-        }
-      } else {
-        next(
-          createHttpError(404, `User with id ${req.params.userId} not found!`)
-        );
-      }
-    } catch (error) {
-      next(error);
-    }
-  }
-);
+// USER ROUTER:
 
 usersRouter.post("/", async (req, res, next) => {
   try {
@@ -288,37 +242,41 @@ usersRouter.post(
       if (user) {
         const selectedExperienceIndex = user.experiences.findIndex(
           (experience) => experience._id.toString() === req.params.experienceId
-          );
-          if (selectedExperienceIndex !== -1) {
-             cloudinary.uploader.upload(url, { public_id: req.params.experienceId, tags: "experience_image" })
-              .then((result) => {
-                const imageUrl = result.url;
-                user.experiences[selectedExperienceIndex].image = imageUrl;
-                user.save({ validateBeforeSave: false }).then(() => {
-                  res.send(user);
-                });
-              })
-              .catch(error => {
-                console.log(error);
-                next(error);
+        );
+        if (selectedExperienceIndex !== -1) {
+          cloudinary.uploader
+            .upload(url, {
+              public_id: req.params.experienceId,
+              tags: "experience_image",
+            })
+            .then((result) => {
+              const imageUrl = result.url;
+              user.experiences[selectedExperienceIndex].image = imageUrl;
+              user.save({ validateBeforeSave: false }).then(() => {
+                res.send(user);
               });
-          } else {
-            next(
-              createHttpError(
-                404,
-                `Experience with id ${req.params.experienceId} not found!`
-              )
-            );
-          }
+            })
+            .catch((error) => {
+              console.log(error);
+              next(error);
+            });
         } else {
           next(
-            createHttpError(404, `User with id ${req.params.userId} not found!`)
+            createHttpError(
+              404,
+              `Experience with id ${req.params.experienceId} not found!`
+            )
           );
         }
-      } catch (error) {
-        next(error);
+      } else {
+        next(
+          createHttpError(404, `User with id ${req.params.userId} not found!`)
+        );
       }
+    } catch (error) {
+      next(error);
     }
-  );
+  }
+);
 
 export default usersRouter;
