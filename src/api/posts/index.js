@@ -1,16 +1,31 @@
 import express from "express";
 import createHttpError from "http-errors";
 import PostModel from "./model.js";
+import q2m from "query-to-mongo";
+import { mongo } from "mongoose";
 
 const postsRouter = express.Router();
 
 postsRouter.get("/", async (req, res, next) => {
   try {
-    const posts = await PostModel.find().populate({
-      path: "user",
-      select: "name surname image",
+    const mongoQuery = q2m(req.query);
+    const total = await PostModel.countDocuments(mongoQuery.criteria);
+    const posts = await PostModel.find(
+      mongoQuery.criteria,
+      mongoQuery.options.fields
+    )
+      .populate({
+        path: "user",
+        select: "name surname image",
+      })
+      .limit(mongoQuery.options.limit)
+      .skip(mongoQuery.options.skip)
+      .sort(mongoQuery.options.sort);
+    res.send({
+      // links: mongoQuery.links("http://localhost:3001/posts", total),
+      // totalPages: Math.ceil(total / mongoQuery.options.limit),
+      posts,
     });
-    res.send(posts);
   } catch (error) {
     next(error);
   }
@@ -18,9 +33,16 @@ postsRouter.get("/", async (req, res, next) => {
 
 postsRouter.post("/", async (req, res, next) => {
   try {
-    const newPost = new PostModel(req.body);
-    const { _id } = await newPost.save();
-    res.status(201).send({ _id });
+    const userId = req.body.user;
+    const user = await UsersModel.findById(userId);
+    console.log(user);
+    if (user) {
+      const newPost = new PostModel(req.body);
+      const { _id } = await newPost.save();
+      res.status(201).send({ _id });
+    } else {
+      next(createHttpError(404, `User with id ${userId} not found`));
+    }
   } catch (error) {
     next(error);
   }
@@ -44,7 +66,7 @@ postsRouter.get("/:postId", async (req, res, next) => {
   }
 });
 
-postsRouter.put("postId", async (req, res, next) => {
+postsRouter.put("/:postId", async (req, res, next) => {
   try {
     const updatedPost = await PostModel.findByIdAndUpdate(
       req.params.postId,
