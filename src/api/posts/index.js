@@ -19,8 +19,8 @@ postsRouter.get("/", async (req, res, next) => {
       .skip(mongoQuery.options.skip)
       .sort(mongoQuery.options.sort);
     res.send({
-      links: mongoQuery.links("http://localhost:3001/posts", total),
-      totalPages: Math.ceil(total / mongoQuery.options.limit),
+      // links: mongoQuery.links("http://localhost:3001/posts", total),
+      // totalPages: Math.ceil(total / mongoQuery.options.limit),
       posts,
     });
   } catch (error) {

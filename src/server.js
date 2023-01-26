@@ -4,7 +4,6 @@ import cors from "cors";
 import mongoose from "mongoose";
 import usersRouter from "./api/users/index.js";
 import postsRouter from "./api/posts/index.js";
-import experiencesRouter from "./api/posts/index.js";
 import {
   badRequestHandler,
   genericErrorHandler,
