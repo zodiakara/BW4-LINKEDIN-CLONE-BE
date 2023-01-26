@@ -14,7 +14,20 @@ import filesRouter from "./api/files/index.js";
 const server = express();
 const port = process.env.PORT;
 
-server.use(cors());
+const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL];
+
+const corsOpts = {
+  origin: (origin, corsNext) => {
+    console.log("Current origin: " + origin);
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      corsNext(null, true);
+    } else {
+      corsNext(createHttpError(400, `Origin ${origin} is not allowed`));
+    }
+  },
+};
+
+server.use(cors(corsOpts));
 server.use(express.json());
 
 // endpoints

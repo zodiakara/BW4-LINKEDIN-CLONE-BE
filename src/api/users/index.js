@@ -110,20 +110,27 @@ usersRouter.delete("/:userId", async (req, res, next) => {
 usersRouter.get("/:userId/experiences", async (req, res, next) => {
   try {
     const user = await UsersModel.findById(req.params.userId);
-    const mongoQuery = q2m(req.query);
-    console.log(req.query, mongoQuery);
-    const total = await experiencesModel.countDocuments(mongoQuery.criteria);
-    const experiences = await experiencesModel
-      .find(mongoQuery.criteria, mongoQuery.options.fields)
-      .sort(mongoQuery.options.sort)
-      .skip(mongoQuery.options.skip)
-      .limit(mongoQuery.options.limit);
-    res.status(200).send({
-      links: mongoQuery.links(total),
-      total,
-      totalPages: Math.ceil(total / mongoQuery.options.limit),
-      experiences,
-    });
+    // const mongoQuery = q2m(req.query);
+    // console.log(req.query, mongoQuery);
+    // const total = await user.experiences.countDocuments(mongoQuery.criteria);
+    // const experiences = await experiencesModel
+    //   .find(mongoQuery.criteria, mongoQuery.options.fields)
+    //   .sort(mongoQuery.options.sort)
+    //   .skip(mongoQuery.options.skip)
+    //   .limit(mongoQuery.options.limit);
+    // res.status(200).send({
+    //   links: mongoQuery.links(total),
+    //   total,
+    //   totalPages: Math.ceil(total / mongoQuery.options.limit),
+    //   experiences,
+    // });
+    if (user) {
+      res.send(user.experiences);
+    } else {
+      next(
+        createHttpError(404, `User with id ${req.params.userId}not found!!`)
+      );
+    }
   } catch (error) {
     next(error);
   }
