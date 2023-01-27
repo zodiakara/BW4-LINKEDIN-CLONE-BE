@@ -6,6 +6,7 @@ import { mongo } from "mongoose";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import UsersModel from "../users/model.js";
 
 const postsRouter = express.Router();
 
