@@ -7,6 +7,8 @@ import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import multer from "multer";
 import createCVPdf from "../../lib/pdf-tools.js";
+import { JWTAuthMiddleware } from "../../lib/auth/jwtMiddleware.js";
+import { createAccessToken, createTokens } from "../../lib/auth/jwt-tools.js";
 
 const usersRouter = express.Router();
 
@@ -16,7 +18,7 @@ const experienceCloudinaryUploader = multer({
   storage: new CloudinaryStorage({
     cloudinary,
     params: {
-      folder: "BW4-LINKEDIN-CLONE-BE/public/imgs",
+      folder: "LINKEDIN-CLONE-BE/public/imgs",
       public_id: (req) => req.params.experienceId,
     },
   }),
@@ -29,7 +31,7 @@ const userProfileCloudinaryUploader = multer({
       folder: "BW4-LINKEDIN-CLONE-BE/users",
     },
   }),
-}).single("user");
+}).single("avatar");
 
 // USER ROUTER:
 
@@ -58,6 +60,53 @@ usersRouter.get("/", async (req, res, next) => {
       res.send(users);
     } else {
       next(createHttpError(404, `users not found`));
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+usersRouter.get("/me", JWTAuthMiddleware, async (req, res, next) => {
+  try {
+    const user = await UsersModel.findById(req.user._id);
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+//login
+usersRouter.post("/login", async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await UsersModel.checkCredentials(email, password);
+    console.log(user);
+    if (user) {
+      const { accessToken, refreshToken } = await createTokens(user);
+      console.log(user);
+      res.send({ accessToken, refreshToken });
+    } else {
+      next(createHttpError(404, "Credentials are not ok!"));
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+//register:
+usersRouter.post("/register", async (req, res, next) => {
+  try {
+    //first email check
+    const { email } = req.body;
+    const user = await UsersModel.checkEmail(email);
+    if (user) {
+      next(createHttpError(409, `This email has already been used!`));
+    } else {
+      const newUser = new UsersModel(req.body);
+      const { _id } = await newUser.save();
+      const payload = { _id };
+      const accessToken = await createAccessToken(payload);
+      res.status(201).send({ accessToken });
     }
   } catch (error) {
     next(error);
@@ -297,7 +346,7 @@ usersRouter.post(
 // POST USER IMAGE
 
 usersRouter.post(
-  "/:userId/image",
+  "/:userId/uploadAvatar",
   userProfileCloudinaryUploader,
   async (req, res, next) => {
     try {

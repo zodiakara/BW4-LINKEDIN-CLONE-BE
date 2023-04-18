@@ -2,7 +2,6 @@ import express from "express";
 import createHttpError from "http-errors";
 import PostModel from "./model.js";
 import q2m from "query-to-mongo";
-import { mongo } from "mongoose";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
@@ -14,7 +13,7 @@ const PostsCloudinaryUploader = multer({
   storage: new CloudinaryStorage({
     cloudinary,
     params: {
-      folder: "BW4-LINKEDIN-CLONE-BE/posts",
+      folder: "LINKEDIN-CLONE-BE/posts",
     },
   }),
 }).single("post");
