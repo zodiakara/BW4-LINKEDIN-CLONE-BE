@@ -53,6 +53,15 @@ usersRouter.post("/", async (req, res, next) => {
   }
 });
 
+usersRouter.get("/me", JWTAuthMiddleware, async (req, res, next) => {
+  try {
+    const user = await UsersModel.findById(req.user._id);
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
 usersRouter.get("/", async (req, res, next) => {
   try {
     const users = await UsersModel.find();
@@ -61,15 +70,6 @@ usersRouter.get("/", async (req, res, next) => {
     } else {
       next(createHttpError(404, `users not found`));
     }
-  } catch (error) {
-    next(error);
-  }
-});
-
-usersRouter.get("/me", JWTAuthMiddleware, async (req, res, next) => {
-  try {
-    const user = await UsersModel.findById(req.user._id);
-    res.send(user);
   } catch (error) {
     next(error);
   }
