@@ -16,7 +16,7 @@ const PostsCloudinaryUploader = multer({
       folder: "LINKEDIN-CLONE-BE/posts",
     },
   }),
-}).single("post");
+}).single("postImage");
 
 postsRouter.get("/", async (req, res, next) => {
   try {
@@ -118,7 +118,7 @@ postsRouter.delete("/:postId", async (req, res, next) => {
 // POST POST IMAGE
 
 postsRouter.post(
-  "/:postId/image",
+  "/:postId/postImage",
   PostsCloudinaryUploader,
   async (req, res, next) => {
     try {
@@ -126,7 +126,7 @@ postsRouter.post(
       const imageUrl = req.file.path;
       const updatedPost = await PostModel.findByIdAndUpdate(
         req.params.postId,
-        { image: imageUrl },
+        { postImage: imageUrl },
         { new: true, runValidators: true }
       );
       if (updatedPost) {
