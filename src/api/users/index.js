@@ -354,7 +354,7 @@ usersRouter.post(
       const imageUrl = req.file.path;
       const updatedUser = await UsersModel.findByIdAndUpdate(
         req.params.userId,
-        { image: imageUrl },
+        { avatar: imageUrl },
         { new: true, runValidators: true }
       );
       if (updatedUser) {
