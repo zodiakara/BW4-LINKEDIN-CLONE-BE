@@ -23,6 +23,19 @@ const experienceSchema = new Schema(
   }
 );
 
+const educationSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    degree: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: false },
+    description: { type: String, required: true },
+    area: { type: String, required: true },
+    image: { type: String, required: false },
+  },
+  { timestamps: true }
+);
+
 const userSchema = new Schema(
   {
     name: { type: String, required: true },
@@ -37,6 +50,7 @@ const userSchema = new Schema(
       default: "https://via.placeholder.com/200x200",
     },
     experiences: [experienceSchema],
+    education: [educationSchema],
     likedPosts: [{ type: String }],
     skills: [{ type: Schema.Types.ObjectId, ref: "Skill" }],
     connections: [{ type: Schema.Types.ObjectId, ref: "User" }],

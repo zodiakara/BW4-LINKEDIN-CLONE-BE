@@ -225,7 +225,7 @@ usersRouter.post("/:userId/experiences", async (req, res, next) => {
         .status(201)
         .send({ message: `Added a new experience.`, updateUserExperience });
     } else {
-      next(createHttpError("Malakia ekanes!"));
+      next(createHttpError(404, `user with id ${req.params.userId} not found`));
     }
   } catch (error) {
     next(error);
@@ -249,6 +249,9 @@ usersRouter.put(
         await user.save();
         res.status(200).send(user);
       } else {
+        next(
+          createHttpError(404, `user with id ${req.params.userId} not found`)
+        );
       }
     } catch (error) {
       next(error);

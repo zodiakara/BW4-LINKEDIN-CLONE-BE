@@ -10,6 +10,7 @@ import {
   notFoundHandler,
 } from "./errorHandlers.js";
 import filesRouter from "./api/files/index.js";
+import educationRouter from "./api/users/education.js";
 
 const server = express();
 const port = process.env.PORT;
@@ -37,6 +38,7 @@ server.use(express.json());
 
 server.use("/posts", postsRouter);
 server.use("/users", usersRouter);
+server.use("/users", educationRouter);
 server.use("/files", filesRouter);
 
 server.use(badRequestHandler);
